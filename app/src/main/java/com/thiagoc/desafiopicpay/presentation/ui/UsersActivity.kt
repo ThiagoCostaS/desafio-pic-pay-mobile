@@ -2,70 +2,63 @@ package com.thiagoc.desafiopicpay.presentation.ui
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.thiagoc.desafiopicpay.R
+import com.thiagoc.desafiopicpay.databinding.ActivityMainBinding
 import com.thiagoc.desafiopicpay.domain.UserDomain
 import com.thiagoc.desafiopicpay.presentation.ui.adapter.UserListAdapter
-import com.thiagoc.desafiopicpay.presentation.viewmodel.MainActivityViewModel
 import com.thiagoc.desafiopicpay.presentation.viewmodel.UserListViewAction
 import com.thiagoc.desafiopicpay.presentation.viewmodel.UserListViewState
-
+import com.thiagoc.desafiopicpay.presentation.viewmodel.UsersViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity() {
+class UsersActivity : AppCompatActivity() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var progressBar: ProgressBar
-    private val viewModel: MainActivityViewModel by viewModel()
-    private lateinit var adapter: UserListAdapter
+    private lateinit var binding: ActivityMainBinding
+    private val viewModel: UsersViewModel by viewModel()
+    private lateinit var adapterListUser: UserListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        initComponentes()
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         configureObserver()
         getUsers()
 
     }
 
-    private fun initComponentes(){
-        recyclerView = findViewById(R.id.recyclerView)
-        progressBar = findViewById(R.id.user_list_progress_bar)
-        adapter = UserListAdapter()
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        progressBar.visibility = View.VISIBLE
-    }
-
     private fun configureObserver() {
-        viewModel.viewState.observe(this, Observer { viewState ->
+        viewModel.viewState.observe(this){ viewState ->
             when (viewState) {
                 is UserListViewState.Error -> viewState.message?.let { showToastError(it) }
                 is UserListViewState.ShowUsers -> showUsers(viewState.users)
                 UserListViewState.Loading -> showLoading()
             }
-        })
+        }
     }
 
-    private fun getUsers(){
+    private fun getUsers() {
         viewModel.dispatchAction(UserListViewAction.GetUsers)
     }
 
     private fun showToastError(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-
-
     private fun showLoading() {
-        TODO("Not yet implemented")
+        binding.userListProgressBar.visibility = View.VISIBLE
     }
 
     private fun showUsers(users: List<UserDomain>) {
-        TODO("Not yet implemented")
+        binding.userListProgressBar.visibility = View.GONE
+        adapterListUser = UserListAdapter()
+        adapterListUser.updateList(users)
+
+        binding.recyclerView.apply {
+            adapter = adapterListUser
+            layoutManager =
+                LinearLayoutManager(this@UsersActivity, LinearLayoutManager.VERTICAL, false)
+        }
     }
 }

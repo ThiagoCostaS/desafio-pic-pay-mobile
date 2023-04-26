@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class MainActivityViewModel(private val getUsersUseCase: GetUsersUseCase) : ViewModel() {
+class UsersViewModel(private val getUsersUseCase: GetUsersUseCase) : ViewModel() {
 
     private val _viewState = MutableLiveData<UserListViewState>(UserListViewState.Loading)
     val viewState: LiveData<UserListViewState> = _viewState
@@ -21,7 +21,7 @@ class MainActivityViewModel(private val getUsersUseCase: GetUsersUseCase) : View
     }
 
     private fun getUsers() = viewModelScope.launch(Dispatchers.IO) {
-        _viewState.value = UserListViewState.Loading
+        _viewState.postValue(UserListViewState.Loading)
         try {
             val users = getUsersUseCase
             _viewState.postValue(UserListViewState.ShowUsers(users.invoke()))

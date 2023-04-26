@@ -5,6 +5,7 @@ import com.thiagoc.desafiopicpay.domain.UserDomain
 
 class GetUsersUseCase(private val repository: UserRepository) {
 
-    suspend operator fun invoke(): List<UserDomain> =
-        repository.getUsers()
+    suspend operator fun invoke(): List<UserDomain> {
+        return repository.getUsers()
+    }
 }
