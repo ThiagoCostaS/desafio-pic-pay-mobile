@@ -1,6 +1,6 @@
 package com.thiagoc.desafiopicpay.application
 import android.app.Application
-import com.thiagoc.desafiopicpay.di.*
+import com.thiagoc.desafiopicpay.application.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.loadKoinModules
@@ -19,7 +19,8 @@ class AppApplication : Application() {
                     dataSourceModule,
                     repositoryModule,
                     useCasesModule,
-                    viewModelModule
+                    viewModelModule,
+                    roomModule
                 )
             )
         }

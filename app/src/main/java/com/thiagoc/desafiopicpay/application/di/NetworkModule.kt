@@ -1,4 +1,4 @@
-package com.thiagoc.desafiopicpay.di
+package com.thiagoc.desafiopicpay.application.di
 
 import com.thiagoc.desafiopicpay.data.remote.network.ApiService
 import com.thiagoc.desafiopicpay.data.remote.network.PicPayService

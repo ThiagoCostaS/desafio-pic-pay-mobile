@@ -1,7 +1,9 @@
 package com.thiagoc.desafiopicpay.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.thiagoc.desafiopicpay.domain.usecases.GetUsersLocalUseCase
 import com.thiagoc.desafiopicpay.domain.usecases.GetUsersUseCase
+import com.thiagoc.desafiopicpay.domain.usecases.SaveUsersLocalUseCase
 import com.thiagoc.desafiopicpay.factory.UsersFactory.usersList
 import com.thiagoc.desafiopicpay.presentation.viewmodel.UserListViewAction
 import com.thiagoc.desafiopicpay.presentation.viewmodel.UserListViewState
@@ -24,6 +26,10 @@ class UsersViewModelTest {
 
     @Mock
     private lateinit var getUsersUseCase: GetUsersUseCase
+    @Mock
+    private lateinit var getUsersLocalUseCase: GetUsersLocalUseCase
+    @Mock
+    private lateinit var saveUsersLocalUseCase: SaveUsersLocalUseCase
 
     private lateinit var viewModel: UsersViewModel
 
@@ -35,7 +41,7 @@ class UsersViewModelTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
 
-        viewModel = UsersViewModel(getUsersUseCase)
+        viewModel = UsersViewModel(getUsersUseCase, getUsersLocalUseCase, saveUsersLocalUseCase)
     }
 
     @Test
@@ -43,6 +49,7 @@ class UsersViewModelTest {
         val expectedViewState = UserListViewState.ShowUsers(usersList)
 
         `when`(getUsersUseCase()).thenReturn(expectedViewState.users)
+        `when`(getUsersLocalUseCase()).thenReturn(usersList)
 
         viewModel.dispatchAction(UserListViewAction.GetUsers)
 
@@ -62,6 +69,6 @@ class UsersViewModelTest {
 
             delay(100)
             val actualViewState = viewModel.viewState.getOrAwaitValue()
-            assertEquals(UserListViewState.Error("aaaa"), actualViewState)
+            assertEquals(UserListViewState.Error(expectedErrorMessage), actualViewState)
         }
 }
