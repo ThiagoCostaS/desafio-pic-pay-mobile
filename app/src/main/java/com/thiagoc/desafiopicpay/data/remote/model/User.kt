@@ -1,4 +1,4 @@
-package com.thiagoc.desafiopicpay.remote.model
+package com.thiagoc.desafiopicpay.data.remote.model
 
 
 data class User(

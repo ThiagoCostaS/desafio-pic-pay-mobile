@@ -1,7 +1,7 @@
-package com.thiagoc.desafiopicpay.remote.mapper
+package com.thiagoc.desafiopicpay.data.remote.mapper
 
 import com.thiagoc.desafiopicpay.domain.UserDomain
-import com.thiagoc.desafiopicpay.remote.model.User
+import com.thiagoc.desafiopicpay.data.remote.model.User
 
 fun User.toDomain() = UserDomain(
     img = img,

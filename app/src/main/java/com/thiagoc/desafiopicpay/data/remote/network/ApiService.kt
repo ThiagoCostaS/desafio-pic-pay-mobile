@@ -1,4 +1,4 @@
-package com.thiagoc.desafiopicpay.remote.network
+package com.thiagoc.desafiopicpay.data.remote.network
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

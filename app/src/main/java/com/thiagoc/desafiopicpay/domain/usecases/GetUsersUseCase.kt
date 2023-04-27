@@ -1,6 +1,6 @@
-package com.thiagoc.desafiopicpay.data.usecases
+package com.thiagoc.desafiopicpay.domain.usecases
 
-import com.thiagoc.desafiopicpay.data.UserRepository
+import com.thiagoc.desafiopicpay.domain.UserRepository
 import com.thiagoc.desafiopicpay.domain.UserDomain
 
 class GetUsersUseCase(private val repository: UserRepository) {

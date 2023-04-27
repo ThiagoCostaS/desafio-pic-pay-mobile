@@ -14,7 +14,7 @@ import com.thiagoc.desafiopicpay.databinding.ListItemUserBinding
 import com.thiagoc.desafiopicpay.domain.UserDomain
 import de.hdodenhof.circleimageview.CircleImageView
 
-class UserListAdapter : RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
+class UserListAdapter : RecyclerView.Adapter<UserListAdapter.UserListViewHolder>() {
 
     private var userList = mutableListOf<UserDomain>()
 
@@ -26,13 +26,13 @@ class UserListAdapter : RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
         diffResult.dispatchUpdatesTo(this)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserListViewHolder {
         val binding =
             ListItemUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return UserViewHolder(binding)
+        return UserListViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: UserListViewHolder, position: Int) {
         val user = userList[position]
         holder.bind(user)
     }
@@ -41,7 +41,7 @@ class UserListAdapter : RecyclerView.Adapter<UserListAdapter.UserViewHolder>() {
         return userList.size
     }
 
-    inner class UserViewHolder(itemView: ListItemUserBinding) :
+    inner class UserListViewHolder(itemView: ListItemUserBinding) :
         RecyclerView.ViewHolder(itemView.root) {
         private val userName: TextView = itemView.username
         private val name: TextView = itemView.name

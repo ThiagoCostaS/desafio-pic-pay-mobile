@@ -1,6 +1,6 @@
-package com.thiagoc.desafiopicpay.remote.network
+package com.thiagoc.desafiopicpay.data.remote.network
 
-import com.thiagoc.desafiopicpay.remote.model.User
+import com.thiagoc.desafiopicpay.data.remote.model.User
 import retrofit2.http.GET
 
 

@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.thiagoc.desafiopicpay.data.usecases.GetUsersUseCase
+import com.thiagoc.desafiopicpay.core.runCatching
+import com.thiagoc.desafiopicpay.domain.usecases.GetUsersUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 
 class UsersViewModel(private val getUsersUseCase: GetUsersUseCase) : ViewModel() {
 
@@ -22,12 +22,18 @@ class UsersViewModel(private val getUsersUseCase: GetUsersUseCase) : ViewModel()
 
     private fun getUsers() = viewModelScope.launch(Dispatchers.IO) {
         _viewState.postValue(UserListViewState.Loading)
-        try {
-            val users = getUsersUseCase
-            _viewState.postValue(UserListViewState.ShowUsers(users.invoke()))
-        } catch (e: Exception) {
-            _viewState.postValue(UserListViewState.Error(e.message ?: "Unknown error"))
-        }
+        runCatching(
+            dispatcher = Dispatchers.Default,
+            execute = {
+                getUsersUseCase()
+            },
+            onFailure = {
+                _viewState.postValue(UserListViewState.Error(it.message))
+            },
+            onSuccess = { users ->
+                _viewState.postValue(UserListViewState.ShowUsers(users))
+            }
+        )
     }
 }
 

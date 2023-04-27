@@ -1,71 +1,67 @@
 package com.thiagoc.desafiopicpay.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.thiagoc.desafiopicpay.data.usecases.GetUsersUseCase
-import com.thiagoc.desafiopicpay.domain.UserDomain
+import com.thiagoc.desafiopicpay.domain.usecases.GetUsersUseCase
+import com.thiagoc.desafiopicpay.factory.UsersFactory.usersList
 import com.thiagoc.desafiopicpay.presentation.viewmodel.UserListViewAction
 import com.thiagoc.desafiopicpay.presentation.viewmodel.UserListViewState
 import com.thiagoc.desafiopicpay.presentation.viewmodel.UsersViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import com.thiagoc.desafiopicpay.viewmodel.livedatautils.getOrAwaitValue
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.mock
+import org.junit.runner.RunWith
+import org.mockito.Mock
 import org.mockito.Mockito.`when`
-import kotlin.test.assertEquals
+import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class UsersViewModelTest {
 
+    @Mock
     private lateinit var getUsersUseCase: GetUsersUseCase
+
     private lateinit var viewModel: UsersViewModel
 
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
-    val testCoroutineRule = MainCoroutineRule()
+    val instantExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun setUp() {
-        getUsersUseCase = mock(GetUsersUseCase::class.java)
+        MockitoAnnotations.openMocks(this)
+
         viewModel = UsersViewModel(getUsersUseCase)
     }
 
     @Test
-    fun `when dispatchAction GetUsers is called and use case returns users, then update view state with ShowUsers`() {
-        testCoroutineRule.testDispatcher.runBlockingTest {
-            // given
-            val userList = listOf(
-                UserDomain("1", "John", 3, "https://example.com/john-doe.jpg"),
-                UserDomain("2", "Jane", 4, "https://example.com/jane-doe.jpg")
-            )
-            `when`(getUsersUseCase()).thenReturn(userList)
+    fun `dispatchAction should get users and update view state to ShowUsers`() = runBlocking {
+        val expectedViewState = UserListViewState.ShowUsers(usersList)
 
-            // when
-            viewModel.dispatchAction(UserListViewAction.GetUsers)
+        `when`(getUsersUseCase()).thenReturn(expectedViewState.users)
 
-            // then
-            val expectedState = UserListViewState.ShowUsers(userList)
-            assertEquals(viewModel.viewState.value, expectedState)
-        }
+        viewModel.dispatchAction(UserListViewAction.GetUsers)
+
+        delay(100)
+        val actualViewState = viewModel.viewState.getOrAwaitValue()
+
+        assertEquals(expectedViewState, actualViewState)
     }
 
     @Test
-    fun `when dispatchAction GetUsers is called and use case throws an exception, then update view state with Error`() {
-        testCoroutineRule.testDispatcher.runBlockingTest {
-            // given
-            val errorMessage = "Failed to load users"
-            `when`(getUsersUseCase()).thenThrow(Exception(errorMessage))
+    fun `dispatchAction should update view state to Error if an exception is thrown`() =
+        runBlocking {
+            val expectedErrorMessage = "Unknown error"
+            `when`(getUsersUseCase()).thenThrow(RuntimeException(expectedErrorMessage))
 
-            // when
             viewModel.dispatchAction(UserListViewAction.GetUsers)
 
-            // then
-            val expectedState = UserListViewState.Error(errorMessage)
-            assertEquals(viewModel.viewState.value, expectedState)
+            delay(100)
+            val actualViewState = viewModel.viewState.getOrAwaitValue()
+            assertEquals(UserListViewState.Error("aaaa"), actualViewState)
         }
-    }
-
 }
