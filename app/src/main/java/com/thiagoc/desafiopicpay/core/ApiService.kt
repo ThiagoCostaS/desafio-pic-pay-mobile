@@ -1,4 +1,4 @@
-package com.thiagoc.desafiopicpay.data.remote.network
+package com.thiagoc.desafiopicpay.core
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -10,13 +10,11 @@ object ApiService {
             .build()
     }
 
-    fun initRetrofit() : Retrofit {
+    fun initRetrofit(baseUrl: String) : Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl)
             .client(okHttp)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-
-    private const val BASE_URL = "https://609a908e0f5a13001721b74e.mockapi.io/picpay/api/"
 }

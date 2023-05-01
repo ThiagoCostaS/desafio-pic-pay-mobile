@@ -8,13 +8,15 @@ import com.thiagoc.desafiopicpay.core.runCatching
 import com.thiagoc.desafiopicpay.domain.usecases.GetUsersLocalUseCase
 import com.thiagoc.desafiopicpay.domain.usecases.GetUsersUseCase
 import com.thiagoc.desafiopicpay.domain.usecases.SaveUsersLocalUseCase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class UsersViewModel(
     private val getUsersUseCase: GetUsersUseCase,
     private val getUsersLocalUseCase: GetUsersLocalUseCase,
-    private val saveUsersLocalUseCase: SaveUsersLocalUseCase
+    private val saveUsersLocalUseCase: SaveUsersLocalUseCase,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     private val _viewState = MutableLiveData<UserListViewState>(UserListViewState.Loading)
@@ -26,22 +28,19 @@ class UsersViewModel(
         }
     }
 
-    private fun getUsers() = viewModelScope.launch(Dispatchers.IO) {
+    private fun getUsers() = viewModelScope.launch(dispatcher) {
         _viewState.postValue(UserListViewState.Loading)
-
-        runCatching(
-            dispatcher = Dispatchers.Default,
+        if (getUsersLocalUseCase().isNotEmpty()) {
+            _viewState.postValue(UserListViewState.ShowUsers(getUsersLocalUseCase()))
+        } else runCatching(
             execute = {
-                if (getUsersLocalUseCase().isNotEmpty()) {
-                    _viewState.postValue(UserListViewState.ShowUsers(getUsersLocalUseCase()))
-                }
                 getUsersUseCase()
             },
             onFailure = {
                 _viewState.postValue(UserListViewState.Error(it.message))
             },
             onSuccess = { users ->
-                viewModelScope.launch(Dispatchers.IO) {
+                viewModelScope.launch(dispatcher) {
                     saveUsersLocalUseCase(users)
                 }
                 _viewState.postValue(UserListViewState.ShowUsers(users))

@@ -7,7 +7,7 @@ import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import com.thiagoc.desafiopicpay.R
-import com.thiagoc.desafiopicpay.RecyclerViewMatchers
+import com.thiagoc.desafiopicpay.RecyclerViewMatchers.shouldHaveTextAtPosition
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -34,6 +34,7 @@ class UsersActivityTest {
 
     @Test
     fun shouldDisplayListItem() {
+        server.start(serverPort)
         server.dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
                 return when (request.path) {
@@ -43,19 +44,19 @@ class UsersActivityTest {
             }
         }
 
-        server.start(serverPort)
-
         launchActivity<UsersActivity>().apply {
             moveToState(Lifecycle.State.RESUMED)
-
-         RecyclerViewMatchers.checkRecyclerViewItem(R.id.recyclerView,0,  ViewMatchers.hasDescendant(ViewMatchers.withText("Eduardo Santos")))
+            with(R.id.recyclerView) {
+                shouldHaveTextAtPosition("Eduardo Santos", 0)
+            }
         }
 
         server.close()
     }
 
     companion object {
-        private const val serverPort = 8080
+
+        private const val serverPort = 9000
 
         private val successResponse by lazy {
             val body =

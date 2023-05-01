@@ -1,31 +1,31 @@
 package com.thiagoc.desafiopicpay.usecase
 
-import com.thiagoc.desafiopicpay.domain.UserRepository
-import com.thiagoc.desafiopicpay.domain.usecases.GetUsersUseCase
+import com.thiagoc.desafiopicpay.domain.UserRepositoryLocal
+import com.thiagoc.desafiopicpay.domain.usecases.GetUsersLocalUseCase
 import com.thiagoc.desafiopicpay.factory.UsersFactory.usersList
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-class GetUsersUseCaseTest {
+class GetUsersLocalUseCaseTest {
 
-    private lateinit var repository: UserRepository
-    private lateinit var useCase: GetUsersUseCase
+    private lateinit var repository: UserRepositoryLocal
+    private lateinit var useCase: GetUsersLocalUseCase
 
     @Before
     fun setup() {
-        repository = mock(UserRepository::class.java)
-        useCase = GetUsersUseCase(repository)
+        repository = Mockito.mock(UserRepositoryLocal::class.java)
+        useCase = GetUsersLocalUseCase(repository)
     }
+
 
     @Test
     fun `when getUsers is invoked, then return a list of users`() = runBlocking {
 
-        `when`(repository.getUsers()).thenReturn(usersList)
+        Mockito.`when`(repository.getUsers()).thenReturn(usersList)
 
         val result = useCase()
 
@@ -35,7 +35,7 @@ class GetUsersUseCaseTest {
     @Test(expected = Exception::class)
     fun `when getUsers throws an exception, then rethrow the exception`() = runBlocking {
         val expectedMessage = "Error"
-        `when`(repository.getUsers()).thenThrow(Exception(expectedMessage))
+        Mockito.`when`(repository.getUsers()).thenThrow(Exception(expectedMessage))
 
         try {
             useCase()

@@ -6,22 +6,17 @@ import com.thiagoc.desafiopicpay.data.local.source.UserDataSourceLocal
 import com.thiagoc.desafiopicpay.domain.UserDomain
 import com.thiagoc.desafiopicpay.domain.UserRepositoryLocal
 import com.thiagoc.desafiopicpay.extensions.getOrThrowDomainError
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 
 
 class UserRepositoryLocalImplementation(private val localDataSource: UserDataSourceLocal) :
     UserRepositoryLocal {
-    override suspend fun getUsers(): List<UserDomain> = runBlocking(Dispatchers.IO) {
+    override suspend fun getUsers(): List<UserDomain> =
         runCatching { localDataSource.getAllUsers() }
             .getOrThrowDomainError()
             .map { it.toDomain() }
-    }
 
-    override suspend fun saveUsers(userList: List<UserDomain>) {
-        runBlocking(Dispatchers.IO) {
+    override suspend fun saveUsers(userList: List<UserDomain>) =
             runCatching { localDataSource.saveUsers(userList.map { it.toEntity() }) }
                 .getOrThrowDomainError()
-        }
-    }
+
 }

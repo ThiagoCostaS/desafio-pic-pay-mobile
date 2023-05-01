@@ -14,14 +14,14 @@ import com.thiagoc.desafiopicpay.presentation.viewmodel.UsersViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class UsersActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private  var binding: ActivityMainBinding? = null
     private val viewModel: UsersViewModel by viewModel()
-    private lateinit var adapterListUser: UserListAdapter
+    private val adapterListUser by lazy { UserListAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(binding?.root)
         setupObserver()
         getUsers()
     }
@@ -46,23 +46,23 @@ class UsersActivity : AppCompatActivity() {
     }
 
     private fun showLoading() {
-        binding.userListProgressBar.visibility = View.VISIBLE
+        binding?.userListProgressBar?.visibility = View.VISIBLE
     }
 
     private fun hideLoading() {
-        binding.userListProgressBar.visibility = View.GONE
+        binding?.userListProgressBar?.visibility = View.GONE
     }
 
     private fun showUsers(users: List<UserDomain>) {
         hideLoading()
-        adapterListUser = UserListAdapter()
+
         adapterListUser.updateList(users)
 
         setupRecyclerView()
     }
 
     private fun setupRecyclerView() {
-        binding.recyclerView.apply {
+        binding?.recyclerView?.apply {
             adapter = adapterListUser
             layoutManager =
                 LinearLayoutManager(this@UsersActivity, LinearLayoutManager.VERTICAL, false)

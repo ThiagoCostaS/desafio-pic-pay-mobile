@@ -3,9 +3,12 @@ package com.thiagoc.desafiopicpay
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.*
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 
@@ -28,13 +31,18 @@ object RecyclerViewMatchers {
 
     fun checkRecyclerViewItem(resId: Int, position: Int, withMatcher: Matcher<View>) {
         Espresso.onView(ViewMatchers.withId(resId)).check(
-            ViewAssertions.matches(
+            matches(
                 atPosition(
                     position,
-                    ViewMatchers.hasDescendant(withMatcher)
+                    hasDescendant(withMatcher)
                 )
             )
         )
+    }
 
+    fun Int.shouldHaveTextAtPosition(text: String, position: Int) {
+        onView(withId(this))
+            .perform(scrollToPosition<RecyclerView.ViewHolder>(position))
+            .check(matches(atPosition(position, hasDescendant(withText(text)))))
     }
 }
