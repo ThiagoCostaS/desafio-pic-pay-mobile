@@ -12,8 +12,6 @@ fun checkToastIsDisplayed(text: String) {
     onView(withText(text))
         .inRoot(isSystemAlertWindow())
         .check(matches(isDisplayed()))
-
-    // Você também pode adicionar uma verificação para garantir que a toast não esteja mais visível depois de alguns segundos
     onView(withText(text))
         .inRoot(isSystemAlertWindow())
         .check(matches(not(isDisplayed())))
