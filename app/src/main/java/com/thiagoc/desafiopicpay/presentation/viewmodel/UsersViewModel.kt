@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.thiagoc.desafiopicpay.core.runCatching
+import com.thiagoc.desafiopicpay.domain.UserDomain
 import com.thiagoc.desafiopicpay.domain.usecases.GetUsersLocalUseCase
 import com.thiagoc.desafiopicpay.domain.usecases.GetUsersUseCase
 import com.thiagoc.desafiopicpay.domain.usecases.SaveUsersLocalUseCase
@@ -30,9 +31,9 @@ class UsersViewModel(
 
     private fun getUsers() = viewModelScope.launch(dispatcher) {
         _viewState.postValue(UserListViewState.Loading)
-        if (getUsersLocalUseCase().isNotEmpty()) {
+         if (getUsersLocalUseCase().isNotEmpty()) {
             _viewState.postValue(UserListViewState.ShowUsers(getUsersLocalUseCase()))
-        } else runCatching(
+         } else runCatching(
             execute = {
                 getUsersUseCase()
             },
@@ -40,13 +41,15 @@ class UsersViewModel(
                 _viewState.postValue(UserListViewState.Error(it.message))
             },
             onSuccess = { users ->
-                viewModelScope.launch(dispatcher) {
-                    saveUsersLocalUseCase(users)
-                }
-                _viewState.postValue(UserListViewState.ShowUsers(users))
+                handleGetUsersSuccess(users)
             }
         )
     }
+
+    private fun handleGetUsersSuccess(users: List<UserDomain>) {
+        viewModelScope.launch(dispatcher) {
+            saveUsersLocalUseCase(users)
+        }
+        _viewState.postValue(UserListViewState.ShowUsers(users))
+    }
 }
-
-

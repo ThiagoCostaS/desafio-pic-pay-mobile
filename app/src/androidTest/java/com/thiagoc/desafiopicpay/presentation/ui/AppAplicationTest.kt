@@ -57,7 +57,5 @@ class AppApplicationTest : Application() {
     private val retrofitModuleTest = module {
         single { ApiService.initRetrofit("http://127.0.0.1:9000") }
         single { get<Retrofit>().create(PicPayService::class.java) }
-
-
     }
 }

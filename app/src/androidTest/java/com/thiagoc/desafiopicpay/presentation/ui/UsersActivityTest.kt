@@ -8,6 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.platform.app.InstrumentationRegistry
 import com.thiagoc.desafiopicpay.R
 import com.thiagoc.desafiopicpay.RecyclerViewMatchers.shouldHaveTextAtPosition
+import com.thiagoc.desafiopicpay.presentation.utils.checkToastIsDisplayed
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -54,6 +55,26 @@ class UsersActivityTest {
         server.close()
     }
 
+
+    @Test
+    fun shouldDisplayToastError() {
+        server.start(serverPort)
+        server.dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                return when (request.path) {
+                    "/users" -> errorResponse
+                    else -> successResponse
+                }
+            }
+        }
+
+        launchActivity<UsersActivity>().apply {
+
+            checkToastIsDisplayed(errorResponse.status)
+        }
+
+        server.close()
+    }
     companion object {
 
         private const val serverPort = 9000
